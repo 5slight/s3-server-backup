@@ -14,8 +14,9 @@ def __is_weekly():
 
 def __get_s3():
     return minio.Minio('s3.amazonaws.com',
-                access_key=cfg.AWS_ACCESS,
-                secret_key=cfg.AWS_SECRET)
+                       access_key=cfg.AWS_ACCESS,
+                       secret_key=cfg.AWS_SECRET,
+                       secure=True)
 
 def push():
     s3 = __get_s3()
@@ -28,21 +29,29 @@ def push():
     else:
         prefix = cfg.NIGHTLY_PREFIX
 
-    s3path = cfg.AWS_BUCKET_FOLDER + prefix + __timestamp() + '.tar.gz'
+    s3path = cfg.AWS_BUCKET_FOLDER + prefix + '_' + __timestamp() + '.tar.gz'
 
     with open(fn, 'rb') as f:
         s3.put_object(cfg.AWS_BUCKET, s3path, f, stat.st_size)
 
-def __list_objects(s3, prefix, ret):
-    objs = s3.list_objects(cfg.AWS_BUCKET,
-                           cfg.AWS_BUCKET_FOLDER + prefix, False)
+def __keep(f, c):
+    def r(l, o):
+        if f(o): l.append(o)
+        return l
+    return reduce(r, c, [])
 
-    sobjs = sorted(objs, lambda o: o.last_modified, reverse=True)
+def __list_objects(s3, prefix, ret):
+    objs = s3.list_objects(cfg.AWS_BUCKET, '', False)
+
+    fobjs = __keep(lambda o: o.object_name.encode('utf8').startswith(prefix),
+                   objs)
+    sobjs = sorted(fobjs, key=lambda o: o.last_modified, reverse=True)
+
     return sobjs[ret: ]
 
 def __remove_objs(s3, objs):
     objs = list(map(lambda o: o.object_name, objs))
-    s3.remove_objects(cfg.AWS_BUCKET, objs)
+    for obj in objs: s3.remove_object(cfg.AWS_BUCKET, obj)
 
 def retention():
     s3 = __get_s3()
@@ -51,6 +60,6 @@ def retention():
     if __is_weekly():
         objs = __list_objects(s3, cfg.WEEKLY_PREFIX, cfg.RETENTION_WEEKLY)
     else:
-        objs =__list_objects(s3, cfg.WEEKLY_PREFIX, cfg.RETENTION_NIGHTLY)
+        objs =__list_objects(s3, cfg.NIGHTLY_PREFIX, cfg.RETENTION_NIGHTLY)
 
     __remove_objs(s3, objs)
