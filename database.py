@@ -19,7 +19,8 @@ def __dump_postgres(fn):
         'pg_dump',
         ('--username=%s' % cfg.DB_USER),
         ('--password=%s' % cfg.DB_PASS),
-        ('--dbname=%s' % cfg.DB_NAME)
+        ('--dbname=%s' % cfg.DB_NAME),
+        '>', fn
     ])
 
 def dump():
