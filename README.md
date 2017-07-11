@@ -8,6 +8,14 @@ The Software is provided "AS IS" and "WITH ALL FAULTS," without warranty of any 
 * Python 2
 * minio
 
+## Database support
+Currently this script can only dump one database each run. Going forward this may need to change for me right now this is acceptable.
+
+It support different DBMSs:
+* MySQL (mysqldump)
+* Postgres (pg_dump)
+
+
 ## Usage
 
 ### Configuration
