@@ -3,6 +3,11 @@
 ################################################################################
 
 # Database config
+
+# DB_TYPE can be set to:
+#   * mysql
+#   * postgres
+DB_TYPE           = ''
 DB_NAME           = ''
 DB_USER           = ''
 DB_PASS           = ''
