@@ -15,6 +15,7 @@ It support different DBMSs:
 * MySQL (mysqldump)
 * Postgres (pg_dump)
 
+NOTE: The database user used for postgres needs to support password login for this to work. This can be configured in `/etc/postgresql/{PG_VERSION}/main/pg_hba.conf` on most distrobutions.
 
 ## Usage
 
