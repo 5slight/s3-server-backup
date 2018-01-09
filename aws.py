@@ -1,7 +1,11 @@
 import config as cfg
 import minio
 import os
+import sys
 from datetime import datetime, date
+
+if sys.version_info[0] > 2:
+    from functools import reduce
 
 def __timestamp():
     n = datetime.now()
