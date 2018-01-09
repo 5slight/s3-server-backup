@@ -8,6 +8,15 @@ The Software is provided "AS IS" and "WITH ALL FAULTS," without warranty of any 
 * Python 2
 * minio
 
+## Database support
+Currently this script can only dump one database each run. Going forward this may need to change for me right now this is acceptable.
+
+It support different DBMSs:
+* MySQL (mysqldump)
+* Postgres (pg_dump)
+
+NOTE: The database user used for postgres needs to support password login for this to work. This can be configured in `/etc/postgresql/{PG_VERSION}/main/pg_hba.conf` on most distrobutions.
+
 ## Usage
 
 ### Configuration
@@ -23,7 +32,15 @@ To simply run a backup all you need to do is run:
 
 ### Via Cron
 
-To setup cron you need to run `backup.py` at a certain time. A typical setup here is to run it at some time overnight every day. This would look like:
+To setup cron you need to run `backup.py` at a certain time. A typical setup here is to run it at some time overnight every day.
+
+To edit your cron jobs run the following. Think about the user that this is run under. Do they have the permissions to access the files and database that you want to backup. They also need to be able to write to the temp directory specified in the config file.
+
+```
+crontab -e
+```
+
+Then insert and tweek the following:
 
 ```
 12 2 * * * /path/to/backup.py
